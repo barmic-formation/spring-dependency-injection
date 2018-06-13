@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Architectures reactive</title>
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/black.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/solarized-light.min.css">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<!-- Spring -->
+			<section>
+				<h3>QInjection de dépendance</h3>
+				<img class="stretch" src="img/dependency.jpg" />
+			</section>
+			<section>
+				<h3>Quelle annotation</h3>
+<pre><code data-trim data-noescape>
+@Configuration class Foo {}
+@Service class Bar {}
+@Controller class Baz {}
+@Repository class Qux {}
+@Component class Quux {}
+</code></pre>
+			</section>
+
+			<section>
+				<h1>Singleton</h1>
+				<p>Tout bean Spring est un singleton</p>
+<pre><code data-trim data-noescape>
+@Service
+@Scope("prototype") // -> pas singleton
+class Foo {}
+</code></pre>
+			</section>
+
+			<section>
+				<h1>@Configuration</h1>
+				<ul>
+					<li>@Bean</li>
+				</ul>
+			</section>
+
+			<section>
+				<h1>@Lazy</h1>
+				<p>Tout bean dans <i>"shared"</i> devrait être @Lazy</p>
+			</section>
+
+			<section>
+				<h1>@Lazy @Autowire</h1>
+<pre><code data-trim data-noescape>
+@Service
+class Foo {
+	private final Bar bar;
+
+	@Autowire
+	public Foo(@Lazy Bar bar) {
+		this.bar = bar; // peut être null
+	}
+}</code></pre>
+			</section>
+
+			<section>
+				<h1>Astuces</h1>
+
+<pre><code data-trim data-noescape>
+@Service
+class Foo {
+    private final Collection&lt;Bar&gt; bar;
+
+    @Autowire
+    public Foo(Collection&lt;Bar&gt; bar) {
+        this.bar = bar;
+    }
+}</code></pre>
+			</section>
+
+			<section>
+				<h1>Astuces</h1>
+
+<pre><code data-trim data-noescape>
+@Service
+class Foo {
+    private final Collection&lt;Bar&gt; bar;
+
+    @Autowire
+    public Foo(Collection&lt;Bar&gt; bar) {
+        this.bar = bar;
+    }
+}</code></pre>
+			</section>
+
+			<!-- Tests -->
+			<section>
+				<h1>Tests</h1>
+			</section>
+			<section>
+<pre class="stretch"><code data-trim data-noescape>
+class MyTest {
+    @Test
+    public void test() {
+        // GIVEN
+        ConfigurationManager.getConfigInstance()
+            .setProperty("foo", "bar");
+
+        // WHEN
+        String myVar = DynamicPropertyFactory.getInstance()
+            .getStringProperty("foo", null)
+            .get();
+
+        // THEN
+        assertThat(myVar).isEqualsTo("bar");
+    }
+
+    @After
+    public void after() {
+        ConfigurationManager.getConfigInstance().clear();
+    }
+}</code></pre>
+			</section>
+
+			<section>
+<pre><code data-trim data-noescape>
+public class AwesomeTest {
+	@Rule
+	public MockitoRule mockitoRule = MockitoJUnit.rule();
+	@Mock
+	private IncredibleService incredibleService;
+
+	@InjectMocks
+	private InvincibleService invincibleService;
+
+	@Test
+	public void test() {
+		// some useless test
+	}
+}</code></pre>
+			</section>
+
+			<!-- Junit5 -->
+			<section>
+				<h1>JUnit5 : intérêt</h1><!-- utilité -->
+				<ul>
+					<li>API mise à jour pour prendre en compte Java 7 et plus</li>
+					<li>Découpage de la bibliothèque</li>
+					<li>pleins de petits trucs</li>
+					<ul>
+						<li>@DisplayName</li>
+						<li>tests "dynamiques" => anciennement tests paramétrés</li>
+					</ul>
+					<li><a href="http://blog.ippon.fr/2017/05/15/junit-5/">Blog d'Ippon</a></li>
+					<li><a href="https://blog.zenika.com/2017/12/13/quoi-de-neuf-avec-junit-5/">Blog de Zenika</a></li>
+				</ul>
+			</section>
+			<section>
+				<h1>JUnit5</h1><!-- mise en place -->
+				<a href="http://www.baeldung.com/junit-5-migration?__s=mq3pm5iqd3eeqywdgoky">Migrating from JUnit 4 to JUnit 5</a>
+			</section>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function () { hljs.initHighlightingOnLoad(); } }
+				],
+				// slideNumber: 'c/t', // Absolute slide numbers (with total).
+				slideNumber: true, // Enable hierarchical slide numbers
+				history: true // Enable slide number in URL fragment
+			});
+		// Automatic fragment numbering
+var fragmentNumbering = function ( event ) {
+  var fragments = $(event.currentSlide).find('.fragment');
+  var order = new Array(fragments.length);
+  $(fragments).filter('[data-index]').each( function () {
+    var index = parseInt($(this).attr('data-index')) - 1;
+    if (index < 0 || index >= order.length) {
+      alert('Invalid data-index: ' + index);
+      return;
+    }
+    if (typeof order[index] == 'undefined') {
+      order[index] = [ $(this) ];
+    } else {
+      order[index].push($(this));
+    }
+  });
+  var index = 0;
+  $(fragments).not('[data-index]').each( function () {
+    while(typeof order[index] != 'undefined') {
+      index = index + 1;
+    }
+    order[index] = [ $(this) ];
+  });
+  $(order).each( function (index) {
+    $(this).each( function () {
+      $(this).attr('data-fragment-index', index);
+    })
+  });
+};
+Reveal.addEventListener('ready', fragmentNumbering);
+Reveal.addEventListener('slidechanged', fragmentNumbering);
+		</script>
+</body>
+
+</html>
