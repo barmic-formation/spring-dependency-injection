@@ -38,11 +38,11 @@
 			<section>
 				<h3>Quelle annotation</h3>
 <pre><code data-trim data-noescape>
-@Configuration class Foo {}
-@Service class Bar {}
-@Controller class Baz {}
-@Repository class Qux {}
-@Component class Quux {}
+@Configuration class SpinderMan {}
+@Service class IronMan {}
+@Controller class CaptainAmerica {}
+@Repository class Wolverine {}
+@Component class MisterFantastic {}
 </code></pre>
 			</section>
 
@@ -52,7 +52,7 @@
 <pre><code data-trim data-noescape>
 @Service
 @Scope("prototype") // -> pas singleton
-class Foo {}
+class Ultron {}
 </code></pre>
 			</section>
 
@@ -73,12 +73,12 @@ class Foo {}
 				<h1>@Lazy @Autowire</h1>
 <pre><code data-trim data-noescape>
 @Service
-class Foo {
-	private final Bar bar;
+class Thor {
+	private final Mjolnir mjolnir;
 
 	@Autowire
-	public Foo(@Lazy Bar bar) {
-		this.bar = bar; // peut être null
+	public Thor(@Lazy Mjolnir mjolnir) {
+		this.mjolnir = mjolnir; // peut être null
 	}
 }</code></pre>
 			</section>
@@ -92,14 +92,14 @@ class Foo {
 
 <pre><code data-trim data-noescape>
 @Service
-class Foo {
+class CaptainAmerica {
     @Transaction
-    public void foo() {
+    public void handshake() {
         // du code
 	}
 
     @PreAuthorize("true")
-    public void bar() {
+    public void hug() {
         // du code
     }
 }</code></pre>
@@ -110,12 +110,12 @@ class Foo {
 
 <pre><code data-trim data-noescape>
 @Service
-class Foo {
-    private final Collection&lt;Bar&gt; bar;
+class AntMan {
+    private final Collection&lt;Ant&gt; ants;
 
     @Autowire
-    public Foo(Collection&lt;Bar&gt; bar) {
-        this.bar = bar;
+    public AntMan(Collection&lt;Ant&gt; ants) {
+        this.ants = ants;
     }
 }</code></pre>
 			</section>
@@ -129,17 +129,17 @@ class Foo {
 				<h1>Pour aller plus loin</h1>
 
 <pre><code data-trim data-noescape>
-interface Foo {
-    String bar();
+interface InronMan {
+    String blast();
 }
 // ailleurs
-Foo foo = (Foo) Proxy.newProxyInstance(
+InronMan ironMan = (InronMan) Proxy.newProxyInstance(
     Thread.currentThread().getContextClassLoader(),
-    new Class[] { Foo.class },
-    (proxy, method, args) -> "biz"
+    new Class[] { InronMan.class },
+    (proxy, method, args) -> "Tony Stark"
 );
  
-log.inf("print => {}", foo.bar()); // affiche "print => biz"
+log.info("print => {}", ironMan.blast()); // affiche "print => biz"
 </code></pre>
 			</section>
 
@@ -154,15 +154,15 @@ class MyTest {
     public void test() {
         // GIVEN
         ConfigurationManager.getConfigInstance()
-            .setProperty("foo", "bar");
+            .setProperty("BlackPanther", "T'Challa");
 
         // WHEN
         String myVar = DynamicPropertyFactory.getInstance()
-            .getStringProperty("foo", null)
+            .getStringProperty("BlackPanther", " T'Chaka")
             .get();
 
         // THEN
-        assertThat(myVar).isEqualsTo("bar");
+        assertThat(myVar).isEqualsTo("T'Challa");
     }
 
     @After
