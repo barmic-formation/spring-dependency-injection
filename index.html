@@ -59,7 +59,8 @@ class Foo {}
 			<section>
 				<h1>@Configuration</h1>
 				<ul>
-					<li>@Bean</li>
+					<li>Permet la <i>« springification »</i> d'objet via @Bean</li>
+					<li>lieu parfait pour mettre en place des constructions Rx</li>
 				</ul>
 			</section>
 
@@ -83,16 +84,23 @@ class Foo {
 			</section>
 
 			<section>
-				<h1>Astuces</h1>
+				<h1>Attention</h1>
+				<ul>
+					<li>Spring utilise massivement le <i>local thread storage</i> ! C'est incompatible avec l'utilisation de reactive stream.</li>
+					<li>Utilisation de différentes annotations de méthodes au sein d'un même bean…</li>
+				</ul>
 
 <pre><code data-trim data-noescape>
 @Service
 class Foo {
-    private final Collection&lt;Bar&gt; bar;
+    @Transaction
+    public void foo() {
+        // du code
+	}
 
-    @Autowire
-    public Foo(Collection&lt;Bar&gt; bar) {
-        this.bar = bar;
+    @PreAuthorize("true")
+    public void bar() {
+        // du code
     }
 }</code></pre>
 			</section>
@@ -110,6 +118,29 @@ class Foo {
         this.bar = bar;
     }
 }</code></pre>
+			</section>
+
+			<section>
+				<h1>Pour aller plus loin</h1>
+				<p>Pour un tas de raison Spring va proxifier les classes avec Spring framework 5 + Spring Boot 2, il n'utilise plus que la méthode standard de création de proxy</p>
+			</section>
+
+			<section>
+				<h1>Pour aller plus loin</h1>
+
+<pre><code data-trim data-noescape>
+interface Foo {
+    String bar();
+}
+// ailleurs
+Foo foo = (Foo) Proxy.newProxyInstance(
+    Thread.currentThread().getContextClassLoader(),
+    new Class[] { Foo.class },
+    (proxy, method, args) -> "biz"
+);
+ 
+log.inf("print => {}", foo.bar()); // affiche "print => biz"
+</code></pre>
 			</section>
 
 			<!-- Tests -->
